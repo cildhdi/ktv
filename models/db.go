@@ -19,6 +19,13 @@ func init() {
 	}
 
 	db.AutoMigrate(&User{})
+	db.AutoMigrate(&Box{})
+	db.AutoMigrate(&ConAll{})
+	db.AutoMigrate(&Consume{})
+	db.AutoMigrate(&Drink{})
+	db.AutoMigrate(&Member{})
+	db.AutoMigrate(&Repair{})
+	db.AutoMigrate(&User{})
 }
 
 // Db Get db

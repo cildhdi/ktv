@@ -33,7 +33,7 @@ func init() {
 		user.Depart = Manager
 		user.LoginName = config.DbName
 		user.Password = config.DbPassword
-		user.Sex = true
+		user.Sex = Men
 		user.Tel = "13344445555"
 		user.UserName = "磊磊"
 		db.Save(&user)

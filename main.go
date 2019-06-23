@@ -66,7 +66,7 @@ func main() {
 	{
 		user.POST("/create", api.CreateUser)
 		user.POST("/delete", api.DeteleUser)
-		user.POST("/upadate", api.UpdateUser)
+		user.POST("/update", api.UpdateUser)
 		user.POST("/get", api.GetUser)
 		user.POST("/all", api.GetAllUser)
 	}

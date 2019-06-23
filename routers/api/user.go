@@ -14,7 +14,7 @@ type addUserParam struct {
 	LoginName string `json:"LoginName" binding:"required"`
 	Password  string `json:"Password" binding:"required"`
 	Depart    int    `json:"Depart" binding:"required"`
-	Sex       bool   `json:"Sex" binding:"required"`
+	Sex       uint   `json:"Sex" binding:"required"`
 	UserName  string `json:"UserName" binding:"required"`
 	Tel       string `json:"Tel" binding:"required"`
 }

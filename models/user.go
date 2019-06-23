@@ -6,7 +6,8 @@ import (
 
 //depart
 const (
-	Reception = iota
+	_ = iota
+	Reception
 	Logistics
 	Finance
 	Manager
@@ -18,7 +19,7 @@ type User struct {
 	LoginName string `json:"LoginName"`
 	Password  string `json:"Password"`
 	Depart    int    `json:"Depart"`
-	Sex       bool   `json:"Sex"`
+	Sex       uint   `json:"Sex"`
 	UserName  string `json:"UserName"`
 	Tel       string `json:"Tel"`
 	Token     string `json:"Token"`

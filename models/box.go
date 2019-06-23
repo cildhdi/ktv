@@ -8,7 +8,8 @@ import (
 
 //types
 const (
-	MiniBox = iota
+	_ = iota
+	MiniBox
 	Small
 	Middle
 	Big
@@ -17,7 +18,8 @@ const (
 
 //states
 const (
-	Reserved = iota
+	_ = iota
+	Reserved
 	Empty
 	Using
 )

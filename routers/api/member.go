@@ -13,7 +13,7 @@ type addMemberParam struct {
 	Name     string  `json:"Name" binding:"required"`
 	Tel      string  `json:"Tel" binding:"required"`
 	Cumcon   uint    `json:"Cumcon" binding:"required"`
-	Sex      bool    `json:"Sex" binding:"required"`
+	Sex      uint    `json:"Sex" binding:"required"`
 	Discount float64 `json:"Discount" binding:"required"`
 }
 

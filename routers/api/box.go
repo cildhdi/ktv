@@ -4,6 +4,7 @@ import (
 	"ktv/models"
 	"ktv/util"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -42,6 +43,9 @@ func CreateBox(ctx *gin.Context) {
 type updateBoxParam struct {
 	addBoxParam
 	idParam
+	BookTime int64         `json:"BookTime" binding:"required"`
+	OpenTime int64         `json:"OpenTime" binding:"required"`
+	Duration time.Duration `json:"Duration" binding:"required"`
 }
 
 //UpdateBox box update
@@ -62,6 +66,9 @@ func UpdateBox(ctx *gin.Context) {
 	box.Price = param.Price
 	box.State = param.State
 	box.Type = param.Type
+	box.BookTime = time.Unix(param.BookTime, 0)
+	box.OpenTime = time.Unix(param.OpenTime, 0)
+	box.Duration = param.Duration
 
 	models.Db().Save(&box)
 	ctx.JSON(http.StatusOK, &box)

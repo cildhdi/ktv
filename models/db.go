@@ -26,6 +26,18 @@ func init() {
 	db.AutoMigrate(&Member{})
 	db.AutoMigrate(&Repair{})
 	db.AutoMigrate(&User{})
+
+	user := User{}
+	db.First(&user, "depart = ?", Manager)
+	if user.ID == 0 {
+		user.Depart = Manager
+		user.LoginName = config.DbName
+		user.Password = config.DbPassword
+		user.Sex = true
+		user.Tel = "13344445555"
+		user.UserName = "磊磊"
+		db.Save(&user)
+	}
 }
 
 // Db Get db

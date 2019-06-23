@@ -13,8 +13,6 @@ import (
 type addRepairParam struct {
 	BoxID  uint   `json:"BoxID" binding:"required"`
 	Reason string `json:"Reason"  binding:"required"`
-	Date   int64  `json:"Time" binding:"required"`
-	UserID uint   `json:"UserID" binding:"required"`
 }
 
 //CreateRepair add
@@ -25,11 +23,24 @@ func CreateRepair(ctx *gin.Context) {
 		return
 	}
 
+	token, err := ctx.Cookie("token")
+	if err != nil {
+		util.SetError(ctx, http.StatusUnauthorized, err.Error())
+	}
+
+	var user models.User
+	models.Db().First(&user, "token = ?", token)
+
+	if user.ID == 0 {
+		util.SetError(ctx, http.StatusUnauthorized, "no such user")
+		return
+	}
+
 	repair := models.Repair{
 		BoxID:  param.BoxID,
 		Reason: param.Reason,
-		Date:   time.Unix(param.Date, 0),
-		UserID: param.UserID,
+		Date:   time.Now(),
+		UserID: user.ID,
 	}
 
 	if err := models.Db().Create(&repair).Error; err != nil {

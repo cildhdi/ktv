@@ -22,25 +22,12 @@ func CreateRepair(ctx *gin.Context) {
 		util.SetError(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
-
-	token, err := ctx.Cookie("token")
-	if err != nil {
-		util.SetError(ctx, http.StatusUnauthorized, err.Error())
-	}
-
-	var user models.User
-	models.Db().First(&user, "token = ?", token)
-
-	if user.ID == 0 {
-		util.SetError(ctx, http.StatusUnauthorized, "no such user")
-		return
-	}
-
+	
 	repair := models.Repair{
 		BoxID:  param.BoxID,
 		Reason: param.Reason,
 		Date:   time.Now(),
-		UserID: user.ID,
+		UserID: 1,
 	}
 
 	if err := models.Db().Create(&repair).Error; err != nil {

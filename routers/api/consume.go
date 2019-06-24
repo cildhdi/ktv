@@ -64,8 +64,11 @@ func UpdateConsume(ctx *gin.Context) {
 	consume.Num = param.Num
 	consume.Date = time.Unix(param.Date, 0)
 
-	models.Db().Save(&consume)
-	ctx.JSON(http.StatusOK, &consume)
+	if err := models.Db().Save(&consume).Error; err != nil {
+		util.SetError(ctx, http.StatusInternalServerError, err.Error())
+	} else {
+		ctx.JSON(http.StatusOK, &consume)
+	}
 }
 
 //DeteleConsume delete

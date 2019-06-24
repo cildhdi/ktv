@@ -66,8 +66,11 @@ func UpdateMember(ctx *gin.Context) {
 	member.Sex = param.Sex
 	member.Discount = param.Discount
 
-	models.Db().Save(&member)
-	ctx.JSON(http.StatusOK, &member)
+	if err := models.Db().Save(&member).Error; err != nil {
+		util.SetError(ctx, http.StatusInternalServerError, err.Error())
+	} else {
+		ctx.JSON(http.StatusOK, &member)
+	}
 }
 
 //DeteleMember delete

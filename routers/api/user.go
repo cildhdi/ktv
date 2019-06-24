@@ -77,8 +77,11 @@ func UpdateUser(ctx *gin.Context) {
 	user.UserName = param.UserName
 	user.Tel = param.Tel
 
-	models.Db().Save(&user)
-	ctx.JSON(http.StatusOK, &user)
+	if err := models.Db().Save(&user).Error; err != nil {
+		util.SetError(ctx, http.StatusInternalServerError, err.Error())
+	} else {
+		ctx.JSON(http.StatusOK, &user)
+	}
 }
 
 //DeteleUser delete

@@ -60,8 +60,11 @@ func UpdateDrink(ctx *gin.Context) {
 	drink.Price = param.Price
 	drink.Stock = param.Stock
 
-	models.Db().Save(&drink)
-	ctx.JSON(http.StatusOK, &drink)
+	if err := models.Db().Save(&drink).Error; err != nil {
+		util.SetError(ctx, http.StatusInternalServerError, err.Error())
+	} else {
+		ctx.JSON(http.StatusOK, &drink)
+	}
 }
 
 //DeteleDrink Drink delete

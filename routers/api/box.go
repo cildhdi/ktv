@@ -14,7 +14,6 @@ type addBoxParam struct {
 	No    string  `json:"No" binding:"required"`
 	Type  int     `json:"Type" binding:"required"`
 	Price float32 `json:"Price" binding:"required"`
-	State int     `json:"State" binding:"required"`
 }
 
 //CreateBox box add
@@ -26,10 +25,13 @@ func CreateBox(ctx *gin.Context) {
 	}
 
 	box := models.Box{
-		No:    param.No,
-		Type:  param.Type,
-		Price: param.Price,
-		State: param.State,
+		No:       param.No,
+		Type:     param.Type,
+		Price:    param.Price,
+		State:    models.Empty,
+		OpenTime: time.Now(),
+		BookTime: time.Now(),
+		Duration: 1,
 	}
 
 	if err := models.Db().Create(&box).Error; err != nil {
@@ -38,40 +40,6 @@ func CreateBox(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, box)
 	}
 	return
-}
-
-type updateBoxParam struct {
-	addBoxParam
-	idParam
-	BookTime int64         `json:"BookTime" binding:"required"`
-	OpenTime int64         `json:"OpenTime" binding:"required"`
-	Duration time.Duration `json:"Duration" binding:"required"`
-}
-
-//UpdateBox box update
-func UpdateBox(ctx *gin.Context) {
-	param := updateBoxParam{}
-	if err := ctx.ShouldBindBodyWith(&param, binding.JSON); err != nil {
-		util.SetError(ctx, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	box := models.Box{}
-	if err := models.Db().First(&box, param.ID).Error; err != nil {
-		util.SetError(ctx, http.StatusNotFound, err.Error())
-		return
-	}
-
-	box.No = param.No
-	box.Price = param.Price
-	box.State = param.State
-	box.Type = param.Type
-	box.BookTime = time.Unix(param.BookTime, 0)
-	box.OpenTime = time.Unix(param.OpenTime, 0)
-	box.Duration = param.Duration
-
-	models.Db().Save(&box)
-	ctx.JSON(http.StatusOK, &box)
 }
 
 type idParam struct {
@@ -115,7 +83,72 @@ func GetBox(ctx *gin.Context) {
 func GetAllBox(ctx *gin.Context) {
 	boxes := []models.Box{}
 	models.Db().Find(&boxes)
+	for _, box := range boxes {
+		if box.State == models.Using && time.Unix(box.Duration, box.OpenTime.UnixNano()).Before(time.Now()) {
+			box.State = models.Empty
+			models.Db().Save(box)
+		}
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"boxes": boxes,
 	})
+}
+
+type bookBoxParam struct {
+	idParam
+	OpenTime int64 `json:"OpenTime" binding:"required"`
+	Duration int64 `json:"Duration" binding:"required"`
+}
+
+//BookBox bookbox
+func BookBox(ctx *gin.Context) {
+	param := bookBoxParam{}
+	if err := ctx.ShouldBindBodyWith(&param, binding.JSON); err != nil {
+		util.SetError(ctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	box := models.Box{}
+	if err := models.Db().First(&box, param.ID).Error; err != nil {
+		util.SetError(ctx, http.StatusNotFound, err.Error())
+		return
+	}
+
+	box.BookTime = time.Now()
+	box.Duration = param.Duration
+	box.OpenTime = time.Unix(param.OpenTime, 0)
+	box.State = models.Reserved
+
+	if err := models.Db().Save(box).Error; err != nil {
+		util.SetError(ctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+	ctx.JSON(http.StatusOK, &box)
+}
+
+//OpenBox openbox
+func OpenBox(ctx *gin.Context) {
+	param := bookBoxParam{}
+	if err := ctx.ShouldBindBodyWith(&param, binding.JSON); err != nil {
+		util.SetError(ctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	box := models.Box{}
+	if err := models.Db().First(&box, param.ID).Error; err != nil {
+		util.SetError(ctx, http.StatusNotFound, err.Error())
+		return
+	}
+
+	box.BookTime = time.Now()
+	box.Duration = param.Duration
+	box.OpenTime = time.Now()
+	box.State = models.Using
+
+	if err := models.Db().Save(box).Error; err != nil {
+		util.SetError(ctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+	ctx.JSON(http.StatusOK, &box)
 }

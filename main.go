@@ -15,9 +15,10 @@ func main() {
 	{
 		box.POST("/create", api.CreateBox)
 		box.POST("/delete", api.DeteleBox)
-		box.POST("/update", api.UpdateBox)
 		box.POST("/get", api.GetBox)
 		box.POST("/all", api.GetAllBox)
+		box.POST("/book", api.BookBox)
+		box.POST("/open", api.OpenBox)
 	}
 
 	conall := ktvapi.Group("/conall")

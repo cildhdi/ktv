@@ -4,6 +4,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+//sex
 const (
 	_ = iota
 	Men
